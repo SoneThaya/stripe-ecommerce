@@ -1,0 +1,13 @@
+.footer-container {
+  background-color: black;
+  height: 100px;
+  align-items: center;
+  display: flex;
+
+  .footer {
+    width: 50%;
+    margin: 4rem auto;
+    text-align: center;
+    color: white;
+  }
+}
