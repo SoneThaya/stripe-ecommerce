@@ -5,6 +5,8 @@ import Shop from "./components/pages/shop/Shop";
 import SingleProduct from "./components/single-product/SingleProduct";
 import CartPage from "./components/pages/cart-page/CartPage";
 import Checkout from "./components/checkout/Checkout";
+import Canceled from "./components/checkout/stripe-checkout/Canceled";
+import Success from "./components/checkout/stripe-checkout/Success";
 
 import "./App.scss";
 
@@ -17,6 +19,8 @@ function App() {
         <Route path="/product/:id" component={SingleProduct} />
         <Route path="/cart" component={CartPage} />
         <Route path="/checkout" component={Checkout} />
+        <Route path="/canceled" component={Canceled} />
+        <Route path="/success" component={Success} />
         <Route path="*" component={NotFound} />
       </Switch>
     </div>

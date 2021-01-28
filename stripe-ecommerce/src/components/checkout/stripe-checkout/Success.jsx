@@ -9,7 +9,7 @@ const Success = ({ history }) => {
 
   return (
     <Layout>
-      <div>
+      <div className="checkout">
         <h1>Thank you for your order</h1>
         <p>
           We are currently processing your order and will send you a
