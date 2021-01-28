@@ -22,13 +22,12 @@ async function createCheckoutSession(req, res) {
       cancel_url: `${domainUrl}/canceled`,
       shipping_address_collection: { allowed_countries: ["GB", "US"] },
     });
-
     res.status(200).json({ sessionId: session.id });
   } catch (error) {
     console.log(error);
     res
       .status(400)
-      .json({ error: "An error occurred, unable to create session!" });
+      .json({ error: "an error occured, unable to create session" });
   }
 }
 
