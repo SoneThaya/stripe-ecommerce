@@ -1,4 +1,4 @@
-const stripeAPI = require("./stripe");
+const stripeAPI = require("../stripe");
 
 async function createCheckoutSession(req, res) {
   const domainUrl = process.env.WEB_APP_URL;
@@ -23,7 +23,7 @@ async function createCheckoutSession(req, res) {
       shipping_address_collection: { allowed_countries: ["GB", "US"] },
     });
 
-    res.status(200).json({ sessionID: session.id });
+    res.status(200).json({ sessionId: session.id });
   } catch (error) {
     console.log(error);
     res
