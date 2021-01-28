@@ -12,7 +12,7 @@ const Checkout = () => {
       <div className="checkout">
         <h2>Checkout Summary</h2>
         <h3>{`Total Items: ${itemCount}`}</h3>
-        <h3>{`Amount to Pay: $${total}`}</h3>
+        <h4>{`Amount to Pay: $${total}`}</h4>
       </div>
     </Layout>
   );
