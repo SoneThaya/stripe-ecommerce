@@ -56,7 +56,7 @@ const SignUp = () => {
                       className={"nomad-input " + (password ? "error" : "")}
                     />
                   </div>
-                  <div>
+                  <div className="submit-btn">
                     <button
                       type="submit"
                       disabled={isSubmitting}
