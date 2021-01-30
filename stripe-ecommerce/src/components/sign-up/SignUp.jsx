@@ -1,14 +1,52 @@
-import React from "react";
+import React, { useState } from "react";
 import Layout from "../shared/Layout";
 import { Formik } from "formik";
+import { withRouter } from "react-router-dom";
+import { auth, createUserProfileDocument } from "../../firebase";
 
 import "./signUp.styles.scss";
 
-const SignUp = () => {
+const validate = (values) => {
+  const errors = {};
+  if (!values.email) {
+    errors.email = "Required";
+  } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)) {
+    errors.email = "Invalid email address";
+  }
+  if (!values.firstname) {
+    errors.firstname = "Required";
+  }
+  if (!values.password) {
+    errors.password = "Required";
+  }
+  return errors;
+};
+
+const SignUp = ({ history: { push } }) => {
+  const [error, setError] = useState(null);
+
   const initialValues = {
     firstname: "",
     email: "",
     password: "",
+  };
+
+  const handleSignUp = async (values, { setSubmitting }) => {
+    const { firstname, email, password } = values;
+
+    try {
+      const { user } = await auth.createUserWithEmailAndPassword(
+        email,
+        password
+      );
+      await createUserProfileDocument(user, { displayName: firstname });
+      push("/shop");
+      setSubmitting(false);
+    } catch (error) {
+      console.log(error);
+      setSubmitting(false);
+      setError(error);
+    }
   };
 
   return (
@@ -18,9 +56,8 @@ const SignUp = () => {
         <div className="form-container">
           <Formik
             initialValues={initialValues}
-            onSubmit={(values) => {
-              console.log(values);
-            }}
+            validate={validate}
+            onSubmit={handleSignUp}
           >
             {({ values, errors, handleChange, handleSubmit, isSubmitting }) => {
               const { firstname, email, password } = errors;
@@ -65,6 +102,9 @@ const SignUp = () => {
                       Sign Up
                     </button>
                   </div>
+                  <div className="error-message">
+                    {error && <p>{error.message}</p>}
+                  </div>
                 </form>
               );
             }}
@@ -75,4 +115,4 @@ const SignUp = () => {
   );
 };
 
-export default SignUp;
+export default withRouter(SignUp);
