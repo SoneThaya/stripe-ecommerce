@@ -8,6 +8,7 @@ import Checkout from "./components/checkout/Checkout";
 import Canceled from "./components/checkout/stripe-checkout/Canceled";
 import Success from "./components/checkout/stripe-checkout/Success";
 import SignUp from "./components/sign-up/SignUp";
+import SignIn from "./components/sign-in/SignIn";
 
 import "./App.scss";
 
@@ -23,6 +24,7 @@ function App() {
         <Route path="/canceled" component={Canceled} />
         <Route path="/success" component={Success} />
         <Route path="/signup" component={SignUp} />
+        <Route path="/signin" component={SignIn} />
         <Route path="*" component={NotFound} />
       </Switch>
     </div>
