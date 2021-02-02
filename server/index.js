@@ -8,6 +8,7 @@ const decodeJWT = require("./auth/decodeJWT");
 const setupIntent = require("./api/setupIntent");
 const validateUser = require("./auth/validateUser");
 const getCards = require("./api/getPaymentMethod");
+const updatePaymentIntent = require("./api/updatePaymentIntent");
 
 const app = express();
 const port = 8080;
@@ -31,6 +32,8 @@ app.post("/create-payment-intent", paymentIntent);
 app.post("/save-payment-method", validateUser, setupIntent);
 
 app.get("/get-payment-methods", validateUser, getCards);
+
+app.put("/update-payment-intent", validateUser, updatePaymentIntent);
 
 app.post("/webhook", webhook);
 
