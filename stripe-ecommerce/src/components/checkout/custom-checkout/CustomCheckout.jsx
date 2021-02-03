@@ -17,6 +17,7 @@ const CustomCheckout = ({ shipping, cartItems, history: { push } }) => {
   const [clientSecret, setClientSecret] = useState(null);
   const [cards, setCards] = useState(null);
   const [payment, setPaymentCard] = useState("");
+  const [saveCard, setSavedCard] = useState(false);
   const stripe = useStripe();
   const elements = useElements();
 
@@ -37,6 +38,7 @@ const CustomCheckout = ({ shipping, cartItems, history: { push } }) => {
           console.log(error);
         }
       };
+      savedCards();
     }
 
     if (shipping) {
@@ -66,6 +68,14 @@ const CustomCheckout = ({ shipping, cartItems, history: { push } }) => {
 
   const handleCheckout = async () => {
     setProcessing(true);
+    let si;
+
+    // check if user has selected to save card
+    if (saveCard) {
+      // make request to create setup intent
+      si = await fetchFromAPI("save-payment-method");
+    }
+
     const payload = await stripe.confirmCardPayment(clientSecret, {
       payment_method: {
         card: elements.getElement(CardNumberElement),
@@ -75,7 +85,17 @@ const CustomCheckout = ({ shipping, cartItems, history: { push } }) => {
     if (payload.error) {
       setError(`Payment Failed: ${payload.error.message}`);
     } else {
-      push("/success");
+      if (saveCard && si) {
+        // send the customers card details to be saved with stripe
+        await stripe.confirmCardSetup(si.client_secret, {
+          payment_method: {
+            card: elements.getElement(CardNumberElement),
+          },
+        });
+        push("/success");
+      } else {
+        push("/success");
+      }
     }
   };
 
@@ -133,6 +153,14 @@ const CustomCheckout = ({ shipping, cartItems, history: { push } }) => {
           >
             {cardOption}
           </select>
+          <button
+            type="submit"
+            disabled={processing || !payment}
+            className="button is-black nomad-btn submit saved-card-btn"
+            
+          >
+            {processing ? "PROCESSING" : "PAY WITH SAVED CARD"}
+          </button>
         </div>
       )}
       <h4>Enter Payment Details</h4>
@@ -157,6 +185,16 @@ const CustomCheckout = ({ shipping, cartItems, history: { push } }) => {
           onChange={cardHandleChange}
         />
       </div>
+      {user && (
+        <div className="save-card">
+          <label>Save Card</label>
+          <input
+            type="checkbox"
+            checked={saveCard}
+            onChange={(e) => setSavedCard(e.target.checked)}
+          />
+        </div>
+      )}
       <div className="submit-btn">
         <button
           disabled={processing}
