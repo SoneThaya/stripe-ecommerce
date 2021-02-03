@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { withRouter } from "react-router-dom";
 import {
   CardNumberElement,
@@ -7,12 +7,16 @@ import {
   useStripe,
   useElements,
 } from "@stripe/react-stripe-js";
+import { UserContext } from "../../../context/UserContext";
 import { fetchFromAPI } from "../../../helpers";
 
 const CustomCheckout = ({ shipping, cartItems, history: { push } }) => {
+  const { user } = useContext(UserContext);
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState(null);
   const [clientSecret, setClientSecret] = useState(null);
+  const [cards, setCards] = useState(null);
+  const [payment, setPaymentCard] = useState("");
   const stripe = useStripe();
   const elements = useElements();
 
@@ -21,6 +25,20 @@ const CustomCheckout = ({ shipping, cartItems, history: { push } }) => {
       price: item.price,
       quantity: item.quantity,
     }));
+
+    if (user) {
+      const savedCards = async () => {
+        try {
+          const cardsList = await fetchFromAPI("get-payment-methods", {
+            method: "GET",
+          });
+          setCards(cardsList);
+        } catch (error) {
+          console.log(error);
+        }
+      };
+    }
+
     if (shipping) {
       const body = {
         cartItems: items,
@@ -84,8 +102,39 @@ const CustomCheckout = ({ shipping, cartItems, history: { push } }) => {
     },
   };
 
+  let cardOption;
+
+  if (cards) {
+    cardOption = cards.map((card) => {
+      const {
+        card: { brand, last4, exp_month, exp_year },
+      } = card;
+      return (
+        <option key={card.id} value={card.id}>
+          {`${brand}/ **** **** **** ${last4} ${exp_month} ${exp_year}`}
+        </option>
+      );
+    });
+    cardOption.unshift(
+      <option key="Select a card" value="">
+        Select A Card
+      </option>
+    );
+  }
+
   return (
     <div>
+      {user && cards && cards.length > 0 && (
+        <div>
+          <h4>Pay with saved card</h4>
+          <select
+            value={payment}
+            onChange={(e) => setPaymentCard(e.target.value)}
+          >
+            {cardOption}
+          </select>
+        </div>
+      )}
       <h4>Enter Payment Details</h4>
       <div className="stripe-card">
         <CardNumberElement
